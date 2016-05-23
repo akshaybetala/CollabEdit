@@ -31,3 +31,25 @@ function insertChar() {
 	textElem.setSelectionRange(finalPos,finalPos);
 
 }
+
+function deleteChar() {
+	console.log("deleteChar called")
+	var pos = document.getElementById("pos").value
+	console.log(pos)
+	var textElem = document.getElementById("filecontent");
+	var content = textElem.value;
+	var currentPos = textElem.selectionStart;
+	var finalPos = -1;
+	if(pos > content.length) {
+		return;
+	}
+	if(pos <= currentPos) {
+		finalPos = currentPos - 1;
+	} else {
+		finalPos = currentPos
+	}
+	
+	textElem.value = (content.substring(0,pos) + content.substring(pos+1))
+	textElem.setSelectionRange(finalPos,finalPos);
+
+}
