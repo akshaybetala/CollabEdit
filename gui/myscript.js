@@ -3,16 +3,17 @@ document.getElementById("filecontent").addEventListener("keydown", checkInput);
 
 
 function checkInput(event){
-    console.log(event.keyCode)
-    console.log(document.getElementById("filecontent").selectionStart);
+    //console.log(event.keyCode)
+    //console.log(document.getElementById("filecontent").selectionStart);
 }
 
 
 function insertChar() {
 	console.log("insertChar called")
 	var char = 'x'
-	var pos = document.getElementById("pos")
+	var pos = document.getElementById("pos").value
 	//take char and pos as input.
+	console.log(pos)
 	var textElem = document.getElementById("filecontent");
 	var content = textElem.value;
 	var currentPos = textElem.selectionStart;
