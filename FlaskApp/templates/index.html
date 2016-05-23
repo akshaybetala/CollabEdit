@@ -5,17 +5,27 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
           rel="stylesheet">
   <script type=text/javascript>
-    $(function() {
-      $('a#calculate').bind('click', function() {
-        $.getJSON('/_add_numbers', {
-          a: $('input[name="a"]').val()
-        }, function(data) {
-          console.log(data.result)
-          $("#result").text(data.result);
-        });
-        return false;
-      });
+$('#clickme').click( function() {
+    var data = save_input(); // data
+
+    data['_sid'] = $survey_id;  // survey_id injected from flask
+    data['_uip'] = $user_ip; // user_ip injected from flask, request.remote_addr
+
+    $.ajax({
+        type : "POST",
+        url : "{{ url_for('mod.load_ajax') }}",
+        data: JSON.stringify(data, null, '\t'),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(result) {
+            console.log(result);
+        }
     });
+
+    console.log(data);
+});
+
+
+
   </script>
   </head>
   <body>
