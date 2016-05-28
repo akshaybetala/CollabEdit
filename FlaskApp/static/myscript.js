@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
 
+
+
 function checkInput(event){
     //console.log(event.keyCode)
     //console.log(document.getElementById("filecontent").selectionStart);
