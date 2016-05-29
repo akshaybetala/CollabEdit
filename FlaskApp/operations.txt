@@ -1,0 +1,27 @@
+Operations Revieved at Server:
+	Insert:
+		opeartion = {client_id: ,
+					type: 'Insert'
+					start_ppi: ,
+					end_ppi: ,
+					value: ,}
+
+	Delete:
+		opeartion = {client_id: ,
+					type: 'Delete'
+					ppi: }
+
+
+Operations Revieved at Client:
+	Insert:
+		opeartion = {client_id: ,
+					type: 'Insert'
+					value = (ppi,value,flag)}
+
+	Delete:
+		opeartion = {client_id:,
+					type: 'Delete'
+					ppi: }
+
+
+					

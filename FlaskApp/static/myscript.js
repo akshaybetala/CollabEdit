@@ -1,21 +1,20 @@
 pps = []
 
 document.getElementById("filecontent").addEventListener("keydown", checkInput);
-document.addEventListener("DOMContentLoaded", function() {
- 
-        $.ajax({
-            url: '/_load',
-            type: 'POST',
-            success: function(response) {
-                console.log(response);
 
-                initPPSAndEditor(response.result);
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
+
+$(document).ready(function(){
+    var socket = io.connect();
+
+    socket.on('initialize-client',function(msg){
+    	console.log(msg);
     });
+
+    socket.on('server-operation',function(operation){
+    	console.log(operation);
+
+    });
+});
 
 
 
