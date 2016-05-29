@@ -58,7 +58,7 @@ class pps(object):
 			self.values.insert(end_index, value)
 
 			return_operation = {'client_id':client_id,
-								'value':(new_ppi,True,value),
+								'value':(new_ppi,value,True),
 								'type':'Insert'}
 			return return_operation
 
