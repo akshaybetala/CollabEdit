@@ -56,14 +56,16 @@ function checkInput(event){
 	    dict['type'] = "insert";
 	    dict['start_ppi'] = ppi_interval[0];
 	    dict['end_ppi'] = ppi_interval[1]; 
-	    dict['value'] = event.keyCode;
+	    dict['value'] = String.fromCharCode(event.keyCode);
 	    dict['client_id'] = my_client_id
 	    
     }
 
     $.ajax({
+    	type:"POST",
     	url: '/apply-operation', 
-    	data : dict , 
+    	data: JSON.stringify(dict, null, '\t'),
+    	contentType: 'application/json;charset=UTF-8',
     	success: function(result){
     		console.log(result)
 	    	if(result.type == 'insert') {
@@ -73,7 +75,8 @@ function checkInput(event){
 	    	}
 	    	insertOrEditEntryInPPS(entry)
 
-    }})
+	    }
+	})
     
     
 }
