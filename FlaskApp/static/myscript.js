@@ -13,9 +13,12 @@ $(document).ready(function(){
     });
 
     socket.on('server-operation',function(operation){
+    	console.log("operation from server")
     	if(my_client_id == operation.client_id) {
+    		console.log('client id same')
     		return
     	}
+
     	console.log(operation);
     	entry = operation.value
     	pos = insertOrEditEntryInPPS(entry)
@@ -43,6 +46,7 @@ function checkInput(event){
     	
     	dict['client_id'] = my_client_id 	
     	dict['ppi'] = getDeletePPIPos(pos)
+    	dict['type'] = "Delete"
     	console.log("deleye called at pos" + pos);
     	
     } else {
@@ -68,13 +72,13 @@ function checkInput(event){
     	contentType: 'application/json;charset=UTF-8',
     	success: function(result){
     		console.log(result)
-	    	if(result.type == 'Insert') {
+	    	if(result.result.type == 'Insert') {
 
-	    		entry = result.value
+	    		entry = result.result.value
 	    		console.log('position received from server -')
 	    		console.log(entry)
 	    	} else {
-	    		entry = [result.ppi, '', false]
+	    		entry = [result.result.ppi, '', false]
 	    	}
 	    	insertOrEditEntryInPPS(entry)
 
@@ -85,11 +89,13 @@ function checkInput(event){
 }
 
 function getDeletePPIPos(pos) {
+	pos--;
+	console.log('pos from editor to be deleted: ' + pos)
 	temp = 0
 	for (i = 0; i < pps.length; i++) {
 		if(pps[i][2] == true) {
 			if(pos == temp ) {
-				return ppi[i][0]
+				return pps[i][0]
 			} else {
 				temp++;
 			}
@@ -99,6 +105,7 @@ function getDeletePPIPos(pos) {
 }
 
 function getPPIInterval(pos) {
+
 	console.log('previous pps - ' + pps)
 	console.log('po for ppiinterval - ' + pos)
 	count = pos
@@ -136,8 +143,9 @@ function initPPSAndEditor(iniDoc) {
 		console.log(entry);
 		insertOrEditEntryInPPS(entry);
 		if(entry[2] == true) {
-
-			insertChar(entry[1],editorPos);
+			console.log('init editor with character')
+			console.log(editorPos,entry[1])
+			insertChar(entry[1],editorPos-1);
 			editorPos++;
 		}
 	}
@@ -145,30 +153,36 @@ function initPPSAndEditor(iniDoc) {
 }
 
 function insertOrEditEntryInPPS(entry) {
-	editorPos = 0;
+	console.log('inseting in to pps')
+	console.log(pps)
+	console.log(entry)
+	editorPos = 1;
 	if(pps.length == 0) {
 		pps.push(entry);
 		return editorPos;
 	}
-	tempPPIListPosition = 0;
+	insertPosition = 0;
 
-	for(e in pps) {
-		if(e[2] == true) {
-			editorPos++;
-		}
+	for(j = 0; j< pps.length; j++) {
+		e = pps[j]
 		if(e[0] == entry[0]) {
-			
-			e[2] = entry[2];
-			return -1;
+			e[2] = entry[2]
+			return -1
 		}
 		else if(e[0] < entry[0]) {
-			tempPPIListPosition++;
-		} 
+			if(e[2] == true) {
+				editorPos++;
+			}
+			insertPosition ++ ;
+		}
 		else {
 			break;
-		}
+		} 
 	}
-	pps.splice(tempPPIListPosition,0,entry);
+	pps.splice(insertPosition,0,entry);
+	console.log('inserting at position - ' + insertPosition)
+	console.log('after inserting')
+	console.log(pps)
 	return editorPos;
 
 }

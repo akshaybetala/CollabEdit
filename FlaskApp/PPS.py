@@ -29,6 +29,7 @@ class pps(object):
 				print 	'ye kaha'
 				return_operation =  self.apply_insert_operation(operation)
 			elif operation['type'].lower() is 'delete':
+				print 'delete'
 				return_operation = self.apply_delete_operation(operation)
 
 			print'end'
@@ -65,6 +66,7 @@ class pps(object):
 	def apply_delete_operation(self,operation):
 		with self.lock:
 			ppi = operation['ppi']
+			print ppi
 			client_id = operation['client_id']
 			ppi_index = self.index(ppi)
 			self.Flag[ppi_index] = False

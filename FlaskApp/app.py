@@ -12,6 +12,15 @@ id = '123'
 
 sidlist = []
 global_pps = PPS.pps(id)
+operation = {}
+
+operation['type'] = "Insert";
+operation['start_ppi'] = 0;
+operation['end_ppi'] = 1 
+operation['value'] = 'a';
+operation['client_id'] = 123123
+
+global_pps.apply_operation(operation)
 
 @app.route("/")
 def main():
@@ -41,10 +50,12 @@ def handle_disconnect():
 
 @app.route('/apply-operation',methods=['POST'])
 def handle_operation():
-	opeartion = request.json
-	return_operation = global_pps.apply_operation(opeartion)
-	print return_operation
-	return jsonify(result=return_operation)
+    opeartion = request.json
+    print opeartion
+    return_operation = global_pps.apply_operation(opeartion)
+    print return_operation
+    socketio.emit('server-operation',return_operation)
+    return jsonify(result=return_operation)
 	
 
 if __name__ == "__main__":
