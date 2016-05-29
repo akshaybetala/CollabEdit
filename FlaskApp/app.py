@@ -36,11 +36,12 @@ def handle_disconnect():
     app.logger.debug('Removing the room: ' + str(request.sid))
     sidlist.remove(request.sid)
 
-@socketio.on('apply-operation')
+@app.route('/apply-operation')
 def handle_operation(operation):
 	app.logger.debug(operation)
 	client_operation =  global_pps.apply_operation(operation)
 	emit('server-operation',client_operation,broadcast=True)
+	return jsonify(client_operation)
 
 if __name__ == "__main__":
 	socketio.run(app, host='0.0.0.0')
