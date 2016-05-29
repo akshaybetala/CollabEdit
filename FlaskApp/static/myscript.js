@@ -8,12 +8,15 @@ $(document).ready(function(){
 
     socket.on('initialize-client',function(msg){
     	console.log(msg);
+    	initPPSAndEditor(msg)
     });
 
     socket.on('server-operation',function(operation){
     	console.log(operation);
 
     });
+
+    
 });
 
 

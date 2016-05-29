@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from time import sleep
-import requests
 import thread
 import json
 import PPS
