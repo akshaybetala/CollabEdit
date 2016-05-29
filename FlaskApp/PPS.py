@@ -12,7 +12,6 @@ class pps(object):
 		self.Flag = [False,False]
 		self.lock = threading.RLock()
 
-
 	def index(self,ppi):
 	    'Locate the index of the ppi'
 	    i = bisect.bisect_left(self.positions,ppi)
@@ -25,10 +24,11 @@ class pps(object):
 
 		with self.lock:
 			print 'insert'
+			print operation['type']
 			if operation['type'].lower() == 'insert':
 				print 	'ye kaha'
 				return_operation =  self.apply_insert_operation(operation)
-			elif operation['type'].lower() is 'delete':
+			elif operation['type'].lower() == 'delete':
 				print 'delete'
 				return_operation = self.apply_delete_operation(operation)
 
