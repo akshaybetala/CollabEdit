@@ -25,7 +25,10 @@ def handle_connect():
     '''
     app.logger.debug('Got a client in room: ' + str(request.sid))
     sidlist.append(request.sid)
-    emit('initialize-client',global_pps.get_pps())
+    data = {}
+    data['pps'] = global_pps.get_pps()
+    data['client_id'] = request.sid
+    emit('initialize-client',data)
 
 @socketio.on('disconnect')
 def handle_disconnect():
