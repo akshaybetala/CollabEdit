@@ -62,5 +62,4 @@ class pps(object):
 
 	def get_pps(self):
 		with self.lock:
-			print zip(self.positions,self.Flag,self.values)
-			return zip(self.positions,self.Flag,self.values)
+			return zip(self.positions,self.values,self.Flag)
