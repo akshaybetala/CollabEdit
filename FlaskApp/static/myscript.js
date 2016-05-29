@@ -19,7 +19,7 @@ $(document).ready(function(){
     	console.log(operation);
     	entry = operation.value
     	pos = insertOrEditEntryInPPS(entry)
-    	if(operation.type = "insert") {
+    	if(operation.type = "Insert") {
     		insertChar(entry[1],pos)
     	} else {
 			deleteChar(pos)    		 
@@ -53,10 +53,10 @@ function checkInput(event){
 	    dict = {}
 	    ppi_interval = getPPIInterval(pos + 1);
 	    console.log(ppi_interval)
-	    dict['type'] = "insert";
+	    dict['type'] = "Insert";
 	    dict['start_ppi'] = ppi_interval[0];
 	    dict['end_ppi'] = ppi_interval[1]; 
-	    dict['value'] = String.fromCharCode(event.keyCode);
+	    dict['value'] = String.fromCharCode(event.which);
 	    dict['client_id'] = my_client_id
 	    
     }
@@ -68,8 +68,11 @@ function checkInput(event){
     	contentType: 'application/json;charset=UTF-8',
     	success: function(result){
     		console.log(result)
-	    	if(result.type == 'insert') {
+	    	if(result.type == 'Insert') {
+
 	    		entry = result.value
+	    		console.log('position received from server -')
+	    		console.log(entry)
 	    	} else {
 	    		entry = [result.ppi, '', false]
 	    	}
@@ -96,35 +99,33 @@ function getDeletePPIPos(pos) {
 }
 
 function getPPIInterval(pos) {
+	console.log('previous pps - ' + pps)
 	console.log('po for ppiinterval - ' + pos)
-	var ppi_interval = [-2,-2];
-	truePPPICnt = pos - 1
-	currentPPITrueCnt = 0;
-	previousTruePos = 0
-	for (i = 0; i < pps.length ; i++) {
-		entry = pps[i];
-		if(entry[2] == true) {
-			truePPPICnt++;
+	count = pos
+	ppi_interval = [-2,-2]
+	i = 0;
+	while(count>0 && i < pps.length){
+		if(pps[i][2] == true) {
+			count--;
 		}
-		if(currentPPITrueCnt == truePPPICnt) {
-			j = i + 1
-			for(;j < pps.length ; j++) {
-				if(pps[j][2] == true) {
-					break
-				}	
-			}
-			if(j == pps.length) {
-				ppi_interval = [ pps[pps.length - 2][0], pps[pps.length - 1][0] ]
-				return ppi_interval
-			}	
-			ppi_interval = [pps[j - 1][0],pps[j][0]]
-			return ppi_interval
-					
-		}
-		
+
+		i++;
 	}
 
+	ppi_interval = [pps[i-2][0],pps[i-1][0]]	
 	return ppi_interval
+
+	// for( ; i < pps.length; i++) {
+	// 	if(pps[i][2] == true) {
+	// 		count++
+	// 	}
+	// 	if(count == pos) {
+	// 		ppi_interval = [pps[i-1][0],pps[i][0]]
+	// 		return
+	// 	}			
+	// }
+	// ppi_interval = [pps[pps.length-2][0],pps[pps.length-1][0]]
+	// return ppi_interval
 }
 
 function initPPSAndEditor(iniDoc) {
