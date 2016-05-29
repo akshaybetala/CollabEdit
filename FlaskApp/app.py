@@ -1,16 +1,47 @@
 from flask import Flask, render_template, request, jsonify
-app = Flask(__name__)
+from flask_socketio import SocketIO, emit, join_room, leave_room, send
+from time import sleep
+import requests
+import thread
+import json
+import PPS
 
-pps = [[1,'a',True],[2,'b',True],[3,'c',True],[4,'d',True]]
+app = Flask(__name__)
+socketio = SocketIO(app, async_mode='threading')
+
+id = '123'
+
+sidlist = []
+global_pps = PPS.pps(id)
 
 @app.route("/")
 def main():
 	return render_template('index.html')
 
-@app.route('/_load',methods=['POST'])
-def add_numbers():
-	
-    return jsonify(result=pps)
+@socketio.on('connect')
+def handle_connect():
+    '''
+    New connection handler that adds a client to the room list
+    :return:
+    '''
+    app.logger.debug('Got a client in room: ' + str(request.sid))
+    sidlist.append(request.sid)
+    emit('initialize-client',global_pps.get_pps())
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    '''
+    Disconnect handler that removes the client from the room list
+    :return:
+    '''
+    app.logger.debug('Removing the room: ' + str(request.sid))
+    sidlist.remove(request.sid)
+
+@socketio.on('apply-operation')
+def handle_operation(operation):
+	app.logger.debug(operation)
+	client_operation =  global_pps.apply_operation(operation)
+	emit('server-operation',client_operation,broadcast=True)
 
 if __name__ == "__main__":
-	app.run()
+	socketio.run(app, host='0.0.0.0')
