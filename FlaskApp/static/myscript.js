@@ -12,7 +12,7 @@ $(document).ready(function(){
     });
 
     socket.on('server-operation',function(operation){
-    	if(my_client_id != operation.client_id) {
+    	if(my_client_id == operation.client_id) {
     		return
     	}
     	console.log(operation);
@@ -37,15 +37,16 @@ function checkInput(event){
     //console.log(document.getElementById("filecontent").selectionStart + 1);
     pos = document.getElementById("filecontent").selectionStart;
     key = event.keyCode
+    dict = {}
     if(event.keyCode == '8') {
     	if(pos == 0) {
     		return;
     	}  
-    	dict = {}
+    	
     	dict['client_id'] = my_client_id 	
     	dict['ppi'] = getDeletePPIPos(pos)
     	console.log("deleye called at pos" + pos);
-    	$.ajax({url: "demo_ajax_script.js", dataType: "script"});
+    	
     } else {
     	if(key > 90 || key < 65) {
     		return;
@@ -58,8 +59,18 @@ function checkInput(event){
 	    dict['end_ppi'] = ppi_interval[1]; 
 	    dict['value'] = event.keyCode;
 	    dict['client_id'] = my_client_id
-	    response = $.ajax({url: "/url", data : dict});
+	    
     }
+    $.ajax({url: "/apply-operation", data : dict , success: function(result){
+    	val = 
+    	if(result.type == 'insert') {
+    		entry = result.value
+    	} else {
+    		entry = [result.ppi, '', false]
+    	}
+    	insertOrEditEntryInPPS(entry)
+    }})
+    
     
 }
 
@@ -72,9 +83,9 @@ function getDeletePPIPos(pos) {
 			} else {
 				temp++;
 			}
-
 		}
 	}
+	return -1
 }
 
 function getPPIInterval(pos) {
@@ -121,7 +132,7 @@ function insertOrEditEntryInPPS(entry) {
 			editorPos++;
 		}
 		if(e[0] == entry[0]) {
-			e[1] = entry[1];
+			
 			e[2] = entry[2];
 			return -1;
 		}
