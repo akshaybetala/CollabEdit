@@ -7,8 +7,9 @@ $(document).ready(function(){
     var socket = io.connect();
 
     socket.on('initialize-client',function(msg){
-    	console.log(msg);
-    	initPPSAndEditor(msg)
+    	console.log(msg.pps);
+    	initPPSAndEditor(msg.pps)
+    	my_client_id = msg.client_id
     });
 
     socket.on('server-operation',function(operation){
@@ -62,7 +63,7 @@ function checkInput(event){
 	    
     }
     $.ajax({url: "/apply-operation", data : dict , success: function(result){
-    	val = 
+    	
     	if(result.type == 'insert') {
     		entry = result.value
     	} else {
@@ -89,7 +90,7 @@ function getDeletePPIPos(pos) {
 }
 
 function getPPIInterval(pos) {
-	var ppi_interval = [-2,-2];
+	var ppi_interval = [1,2];
 	for (i = 0; i < pps.length ; i++) {
 		entry = pps[i];
 		if(entry[0] < pos) {
@@ -97,6 +98,7 @@ function getPPIInterval(pos) {
 		}
 		else if(entry[0] > pos) {
 			ppi_interval[1] = entry[0]
+			break;
 		}
 	}
 
