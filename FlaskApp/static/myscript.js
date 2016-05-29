@@ -54,7 +54,8 @@ function checkInput(event){
     	}
     	console.log("char inserted at pos - " + (pos +1) + " " + key )
 	    dict = {}
-	    ppi_interval = getPPIInterval(pos);
+	    ppi_interval = getPPIInterval(pos + 1);
+	    console.log(ppi_interval)
 	    dict['type'] = "insert";
 	    dict['start_ppi'] = ppi_interval[0];
 	    dict['end_ppi'] = ppi_interval[1]; 
@@ -62,6 +63,7 @@ function checkInput(event){
 	    dict['client_id'] = my_client_id
 	    
     }
+    
     $.ajax({url: "/apply-operation", data : dict , success: function(result){
     	
     	if(result.type == 'insert') {
@@ -90,16 +92,32 @@ function getDeletePPIPos(pos) {
 }
 
 function getPPIInterval(pos) {
-	var ppi_interval = [1,2];
+	console.log('po for ppiinterval - ' + pos)
+	var ppi_interval = [-2,-2];
+	truePPPICnt = pos - 1
+	currentPPITrueCnt = 0;
+	previousTruePos = 0
 	for (i = 0; i < pps.length ; i++) {
 		entry = pps[i];
-		if(entry[0] < pos) {
-			ppi_interval[0]  = entry[0];
+		if(entry[2] == true) {
+			truePPPICnt++;
 		}
-		else if(entry[0] > pos) {
-			ppi_interval[1] = entry[0]
-			break;
+		if(currentPPITrueCnt == truePPPICnt) {
+			j = i + 1
+			for(;j < pps.length ; j++) {
+				if(pps[j][2] == true) {
+					break
+				}	
+			}
+			if(j == pps.length) {
+				ppi_interval = [ pps[pps.length - 2][0], pps[pps.length - 1][0] ]
+				return ppi_interval
+			}	
+			ppi_interval = [pps[j - 1][0],pps[j][0]]
+			return ppi_interval
+					
 		}
+		
 	}
 
 	return ppi_interval
