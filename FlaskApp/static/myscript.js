@@ -30,9 +30,6 @@ $(document).ready(function(){
     
 });
 
-
-
-
 function checkInput(event){
     //console.log(event.keyCode)
     //console.log(document.getElementById("filecontent").selectionStart + 1);
@@ -63,15 +60,19 @@ function checkInput(event){
 	    dict['client_id'] = my_client_id
 	    
     }
-    
-    $.ajax({url: "/apply-operation", data : dict , success: function(result){
-    	
-    	if(result.type == 'insert') {
-    		entry = result.value
-    	} else {
-    		entry = [result.ppi, '', false]
-    	}
-    	insertOrEditEntryInPPS(entry)
+
+    $.ajax({
+    	url: '/apply-operation', 
+    	data : dict , 
+    	success: function(result){
+    		console.log(result)
+	    	if(result.type == 'insert') {
+	    		entry = result.value
+	    	} else {
+	    		entry = [result.ppi, '', false]
+	    	}
+	    	insertOrEditEntryInPPS(entry)
+
     }})
     
     
