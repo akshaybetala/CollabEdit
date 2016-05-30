@@ -24,34 +24,19 @@ class pps(object):
 		print 'apply_operation'
 
 		with self.lock:
-			print 'insert'
 			if operation['type'].lower() == 'insert':
-				print 	'ye kaha'
 				return_operation =  self.apply_insert_operation(operation)
-			elif operation['type'].lower() is 'delete':
-				print 'delete'
+			elif operation['type'].lower() == 'delete':
 				return_operation = self.apply_delete_operation(operation)
-
-			print'end'
-
 			return return_operation
 
 	def apply_insert_operation(self,operation):
-		print 'here'
 		with self.lock:
-			print 'here'
-
 			client_id = operation['client_id']
-			print client_id
 			start_ppi = operation['start_ppi']
-			print start_ppi
 			end_ppi = operation['end_ppi']
-			print end_ppi
 			value = operation['value']
-			print value
-
-			print 'here'
-
+			
 			end_index = self.index(end_ppi)
 			new_ppi = self.get_new_ppi_position(self.positions[end_index-1],self.positions[end_index])
 			self.positions.insert(end_index, new_ppi)
@@ -70,9 +55,9 @@ class pps(object):
 		
 		with self.lock:
 			ppi = operation['ppi']
-			print ppi
 			client_id = operation['client_id']
 			ppi_index = self.index(ppi)
+			print ppi,client_id,ppi_index
 			self.Flag[ppi_index] = False
 
 			return_operation = {'client_id':client_id,

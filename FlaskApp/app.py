@@ -55,7 +55,7 @@ def handle_operation():
     return_operation = global_pps.apply_operation(opeartion)
     print return_operation
     socketio.emit('server-operation',return_operation)
-    return jsonify(result=return_operation)
+    return jsonify(return_operation)
 	
 
 if __name__ == "__main__":

@@ -7,8 +7,9 @@ $(document).ready(function(){
     var socket = io.connect();
 
     socket.on('initialize-client',function(msg){
-    	
-    	initPPSAndEditor(msg.pps)
+    	pps =msg.pps
+    	console.log(pps)
+    	initEditor()
     	my_client_id = msg.client_id
     	//console.log('initialized pps ' + pps)
     });
@@ -23,15 +24,11 @@ $(document).ready(function(){
 
     	if(operation.type == "Insert") {
     		//console.log('operation type is insert')
-    		entry = operation.value
-    		pos = insertOrEditEntryInPPS(entry)
+    		pos = applyServerInsertOperation(operation)
     		//console.log('editor pos for server insert : ' + pos)
     		insertChar(entry[1],pos)
     	} else {
-    		//console.log('operation type is delete')
-    		entry = [operation.ppi,'',false]
-    		//console.log('entry sending for server delete for editing pps' + entry)
-    		pos = insertOrEditEntryInPPS(entry)
+    		pos = applyServerDeleteOperation(operation)
     		//console.log('editor pos for server delete : ' + pos)
 			deleteChar(pos)    		 
     	}
@@ -53,7 +50,7 @@ function checkInput(event){
     	//console.log("delete input received from user at pos: " + pos)
     	pos--;
     	  
-    	operation = createDeleteOpeartion(my_client_id, getDeletePPIPos(pos) )
+    	operation = createClientDeleteOpeartion(my_client_id, getDeletePPIPos(pos) )
     	
     } else {
     	if(key > 90 || key < 65) {
@@ -61,7 +58,7 @@ function checkInput(event){
     	}
     	//console.log("insert input received from user at pos: " + pos)
 	    ppi_interval = getPPIInterval(pos);
-	    operation = createInsertOperation(my_client_id, 
+	    operation = createClientInsertOperation(my_client_id, 
 	    									ppi_interval[0],
 	    									ppi_interval[1],
 	    									String.fromCharCode(event.which));
@@ -75,21 +72,19 @@ function checkInput(event){
     	url: '/apply-operation', 
     	data: JSON.stringify(operation, null, '\t'),
     	contentType: 'application/json;charset=UTF-8',
-    	success: function(result){
+    	success: function(operation){
     		
-	    	if(result.result.type == 'Insert') {
+	    	if(operation.type == 'Insert') {
+	    		applyServerInsertOperation(operation)
 
-	    		entry = result.result.value
 	    	} else {
-	    		entry = [result.result.ppi, '', false]
+	    		applyServerDeleteOperation(operation)
 	    	}
-	    	insertOrEditEntryInPPS(entry)
-
 	    }
 	})
 }
 
-function createInsertOperation(client_id, start_ppi, end_ppi, value){
+function createClientInsertOperation(client_id, start_ppi, end_ppi, value){
 	operation = {}
 	operation['type'] = "Insert";
     operation['start_ppi'] = start_ppi;
@@ -99,7 +94,7 @@ function createInsertOperation(client_id, start_ppi, end_ppi, value){
     return operation
 }
 
-function createDeleteOpeartion(client_id, ppi){
+function createClientDeleteOpeartion(client_id, ppi){
 	operation = {}
 	operation['client_id'] = client_id 	
     operation['ppi'] = ppi
@@ -125,7 +120,7 @@ function getDeletePPIPos(pos) {
 function getPPIInterval(pos) {
 	i = 0;
 	while(pos>=0 && i < pps.length){
-		if(pps[i][2]) pos--;
+		if(pps[i][2]==true) pos--;
 		i++;
 	}
 
@@ -134,22 +129,23 @@ function getPPIInterval(pos) {
 
 }
 
-
 //  Block the text editor while initializing
-function initPPSAndEditor(iniDoc) {
-	document.getElementById("filecontent").value = ""	
-	editorPos = 0;
-	for(i = 0; i < iniDoc.length ; i++ ) {
-		entry = iniDoc[i]
-		insertOrEditEntryInPPS(entry);
-		if(entry[2] == true) {
-			insertChar(entry[1],editorPos);
-			editorPos++;
+function initEditor() {
+	fileValue = ""
+
+	for(i = 0; i < pps.length ; i++ ) {
+		if(pps[i][2]==true){
+			fileValue+=pps[i][1]
 		}
 	}
+	console.log(fileValue)
+	document.getElementById("filecontent").value = fileValue;
 }
 
-function insertEntryInPPS(entry) {
+function applyServerInsertOperation(operation) {
+	
+	entry = operation.value
+
 	editorPos = 0;
 	if(pps.length == 0) {
 		pps.push(entry);
@@ -177,7 +173,9 @@ function insertEntryInPPS(entry) {
 	return editorPos;
 }
 
-function updateEntryInPPS(entry) {
+function applyServerDeleteOperation(operation) {
+	
+	entry = [operation.ppi, '', false]
 	//console.log('entry received for editing pps' + entry)
 	editorPos = 0;
 	if(pps.length == 0) {
