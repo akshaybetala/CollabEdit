@@ -218,7 +218,7 @@ function insertChar(char, pos) {
 	if(pos > content.length) {
 		return;
 	}
-	if(pos <= currentPos) {
+	if(pos < currentPos) {
 		finalPos = currentPos + 1;
 	} else {
 		finalPos = currentPos
@@ -237,7 +237,7 @@ function deleteChar(pos) {
 	if(pos > content.length) {
 		return;
 	}
-	if(pos <= currentPos) {
+	if(pos < currentPos) {
 		finalPos = currentPos - 1;
 	} else {
 		finalPos = currentPos
