@@ -57,6 +57,21 @@ def handle_operation():
     socketio.emit('server-operation',return_operation)
     return jsonify(return_operation)
 	
+@app.route('/reset')
+def handle_reset():
+	global global_pps
+	global_pps = PPS.pps(id)
+	operation = {}
+
+	operation['type'] = "Insert";
+	operation['start_ppi'] = 0;
+	operation['end_ppi'] = 100 
+	operation['value'] = 'a';
+	operation['client_id'] = 123123
+
+	global_pps.apply_operation(operation)
+	return render_template('index.html')
+
 
 if __name__ == "__main__":
 	socketio.run(app, host='0.0.0.0')
