@@ -7,10 +7,11 @@ import threading
 class pps(object):
 
 	def __init__(self,id):
-		self.positions = [0.0,1.0]
+		self.positions = [0.0,100.0]
 		self.values = ['$0','$1']
 		self.Flag = [False,False]
 		self.lock = threading.RLock()
+
 
 	def index(self,ppi):
 	    'Locate the index of the ppi'
@@ -24,11 +25,10 @@ class pps(object):
 
 		with self.lock:
 			print 'insert'
-			print operation['type']
 			if operation['type'].lower() == 'insert':
 				print 	'ye kaha'
 				return_operation =  self.apply_insert_operation(operation)
-			elif operation['type'].lower() == 'delete':
+			elif operation['type'].lower() is 'delete':
 				print 'delete'
 				return_operation = self.apply_delete_operation(operation)
 
@@ -53,7 +53,7 @@ class pps(object):
 			print 'here'
 
 			end_index = self.index(end_ppi)
-			new_ppi = (self.positions[end_index-1] + self.positions[end_index])/2
+			new_ppi = self.get_new_ppi_position(self.positions[end_index-1],self.positions[end_index])
 			self.positions.insert(end_index, new_ppi)
 			self.Flag.insert(end_index, True)
 			self.values.insert(end_index, value)
@@ -63,7 +63,11 @@ class pps(object):
 								'type':'Insert'}
 			return return_operation
 
+	def get_new_ppi_position(self,start,end):
+		return start+(end-start)*0.001
+
 	def apply_delete_operation(self,operation):
+		
 		with self.lock:
 			ppi = operation['ppi']
 			print ppi
