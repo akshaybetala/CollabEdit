@@ -143,8 +143,7 @@ function initPPSAndEditor(iniDoc) {
 	}
 }
 
-function insertOrEditEntryInPPS(entry) {
-	//console.log('entry received for editing pps' + entry)
+function insertEntryInPPS(entry) {
 	editorPos = 0;
 	if(pps.length == 0) {
 		pps.push(entry);
@@ -155,8 +154,8 @@ function insertOrEditEntryInPPS(entry) {
 	for(j = 0; j< pps.length; j++) {
 		e = pps[j]
 		if(e[0] == entry[0]) {
-			e[2] = entry[2]
-			return editorPos
+			throw 'Error : cannot insert this entry as it already exists'
+			return
 		}
 		else if(e[0] < entry[0]) {
 			if(e[2] == true) {
@@ -167,6 +166,39 @@ function insertOrEditEntryInPPS(entry) {
 		else {
 			break;
 		} 
+	}
+	pps.splice(insertPosition,0,entry);
+	return editorPos;
+}
+
+function updateEntryInPPS(entry) {
+	//console.log('entry received for editing pps' + entry)
+	editorPos = 0;
+	if(pps.length == 0) {
+		pps.push(entry);
+		return editorPos;
+	}
+	insertPosition = 0;
+	found = false
+	for(j = 0; j< pps.length; j++) {
+		e = pps[j]
+		if(e[0] == entry[0]) {
+			e[2] = entry[2]
+			found = true
+			break
+		}
+		else if(e[0] < entry[0]) {
+			if(e[2] == true) {
+				editorPos++;
+			}
+			insertPosition ++ ;
+		}
+		else {
+			break;
+		} 
+	}
+	if(!found) {
+		throw 'No entry exists corresponding to this ppi'
 	}
 	pps.splice(insertPosition,0,entry);
 	return editorPos;
