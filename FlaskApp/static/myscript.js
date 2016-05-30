@@ -45,7 +45,7 @@ function checkInput(event){
     pos = document.getElementById("filecontent").selectionStart;
     
     key = event.keyCode
-    dict = {}
+    operation = {};
     if(event.keyCode == '8') {
     	if(pos == 0) {
     		return;
@@ -53,33 +53,27 @@ function checkInput(event){
     	//console.log("delete input received from user at pos: " + pos)
     	pos--;
     	  
-    	
-    	dict['client_id'] = my_client_id 	
-    	dict['ppi'] = getDeletePPIPos(pos)
-    	//console.log("delete ppi for the user input:" + dict['ppi'])
-    	dict['type'] = "Delete"
-    	
+    	operation = createDeleteOpeartion(my_client_id, getDeletePPIPos(pos) )
     	
     } else {
     	if(key > 90 || key < 65) {
     		return;
     	}
     	//console.log("insert input received from user at pos: " + pos)
-	    dict = {}
 	    ppi_interval = getPPIInterval(pos);
-	    console.log('ppi_interval for the insert: ' + ppi_interval)
-	    dict['type'] = "Insert";
-	    dict['start_ppi'] = ppi_interval[0];
-	    dict['end_ppi'] = ppi_interval[1]; 
-	    dict['value'] = String.fromCharCode(event.which);
-	    dict['client_id'] = my_client_id
+	    operation = createInsertOperation(my_client_id, 
+	    									ppi_interval[0],
+	    									ppi_interval[1],
+	    									String.fromCharCode(event.which));
 	    
+
+	    console.log('ppi_interval for the insert: ' + ppi_interval)
     }
 
     $.ajax({
     	type:"POST",
     	url: '/apply-operation', 
-    	data: JSON.stringify(dict, null, '\t'),
+    	data: JSON.stringify(operation, null, '\t'),
     	contentType: 'application/json;charset=UTF-8',
     	success: function(result){
     		
@@ -93,35 +87,45 @@ function checkInput(event){
 
 	    }
 	})
-    
-    
+}
+
+function createInsertOperation(client_id, start_ppi, end_ppi, value){
+	operation = {}
+	operation['type'] = "Insert";
+    operation['start_ppi'] = start_ppi;
+    operation['end_ppi'] = end_ppi; 
+    operation['value'] = value;
+    operation['client_id'] = client_id;
+    return operation
+}
+
+function createDeleteOpeartion(client_id, ppi){
+	operation = {}
+	operation['client_id'] = client_id 	
+    operation['ppi'] = ppi
+    operation['type'] = "Delete"    	
+    return operation;
 }
 
 function getDeletePPIPos(pos) {
 	
-	temp = 0
 	for (i = 0; i < pps.length; i++) {
 		if(pps[i][2] == true) {
-			if(pos == temp ) {
+			if(pos == 0 ) {
 				return pps[i][0]
-			} else {
-				temp++;
 			}
+			
+			pos--;
+			
 		}
 	}
 	return -1
 }
 
 function getPPIInterval(pos) {
-
-	count = pos
-	ppi_interval = [-2,-2]
 	i = 0;
-	while(count>=0 && i < pps.length){
-		if(pps[i][2] == true) {
-			count--;
-		}
-
+	while(pos>=0 && i < pps.length){
+		if(pps[i][2]) pos--;
 		i++;
 	}
 
@@ -130,6 +134,8 @@ function getPPIInterval(pos) {
 
 }
 
+
+//  Block the text editor while initializing
 function initPPSAndEditor(iniDoc) {
 	document.getElementById("filecontent").value = ""	
 	editorPos = 0;
